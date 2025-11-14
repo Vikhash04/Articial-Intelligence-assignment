@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Updated Title -->
+    <title>MECH ASSIST - Your Basic Mechanical engineering queries resolved</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Share Tech Mono font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Set base font and dark theme */
+        html {
+            font-family: 'Share Tech Mono', monospace;
+        }
+        
+        /* Custom scrollbar for chat area */
+        #chat-window {
+            scrollbar-width: thin;
+            scrollbar-color: #22d3ee #030712; /* cyan-400 thumb, gray-950 track */
+        }
+
+        #chat-window::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #chat-window::-webkit-scrollbar-track {
+            background: #030712; /* gray-950 */
+        }
+
+        #chat-window::-webkit-scrollbar-thumb {
+            background-color: #22d3ee; /* cyan-400 */
+            border-radius: 10px;
+            border: 2px solid #030712;
+        }
+
+        /* Ensure the app takes up the full height */
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+        }
+        
+        /* Add a faint scanline effect for the background */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(0deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 1px 3px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body class="bg-black text-cyan-300">
+
+    <div class="flex flex-col h-screen max-w-4xl mx-auto bg-gray-950/80 backdrop-blur-md border border-cyan-500/20 shadow-xl shadow-cyan-500/10 rounded-lg overflow-hidden">
+        
+        <!-- Header -->
+        <header class="bg-gray-900/70 backdrop-blur-sm border-b border-cyan-500/30 p-4 shadow-md">
+            <!-- Updated Header Text -->
+            <h1 class="text-2xl font-bold text-center text-cyan-300 tracking-wider">MECH ASSIST</h1>
+            <!-- Updated Subheader Text -->
+            <p class="text-sm text-center text-cyan-500">Your Basic Mechanical engineering queries resolved</p>
+        </header>
+
+        <!-- Chat Window -->
+        <main id="chat-window" class="flex-1 p-6 overflow-y-auto space-y-4">
+            <!-- Initial bot message -->
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <span class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
+                        <!-- Bot Icon: Core -->
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 15.91a4.5 4.5 0 0 1-6.364 0 4.5 4.5 0 0 1 0-6.364 4.5 4.5 0 0 1 6.364 0 4.5 4.5 0 0 1 0 6.364Z" />
+                        </svg>
+                    </span>
+                </div>
+                <div class="ml-3 max-w-xs md:max-w-md">
+                    <div class="bg-gray-800/60 text-cyan-200 p-3 rounded-lg border border-cyan-500/20 shadow-md">
+                        <p class="text-sm">System online. MECH ASSIST ready. State your mechanical engineering query. Type 'help' to see a list of known topics.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Messages will be appended here -->
+        </main>
+
+        <!-- Input Area -->
+        <footer class="p-4 bg-gray-900/70 backdrop-blur-sm border-t border-cyan-500/30">
+            <!-- Loading/Error Indicator -->
+            <div id="status-indicator" class="h-6 text-sm text-cyan-400 text-center mb-2"></div>
+            
+            <form id="chat-form" class="flex items-center space-x-3">
+                <input type="text" id="message-input" placeholder="Enter query... (e.g., 'what is stress' or 'help')" autocomplete="off"
+                       class="flex-1 w-full px-4 py-3 bg-gray-800 border border-cyan-500/30 rounded-md shadow-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-shadow">
+                <button type="submit" id="send-button"
+                        class="flex-shrink-0 inline-flex items-center justify-center h-12 w-12 rounded-md bg-cyan-600 text-gray-900 shadow-lg hover:bg-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-gray-950 transition-all disabled:opacity-50">
+                    <!-- Send Icon: Chevron Arrow -->
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />
+                    </svg>
+                </button>
+            </form>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const chatWindow = document.getElementById('chat-window');
+        const chatForm = document.getElementById('chat-form');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const statusIndicator = document.getElementById('status-indicator');
+
+        // --- MASSIVELY EXPANDED KNOWLEDGE BASE ---
+        const knowledgeBase = {
+            // Mechanics - Statics & Dynamics
+            "force": "A force is any interaction that, when unopposed, will change the motion of an object. It is a vector quantity (magnitude and direction). F = ma.",
+            "newton's first law": "Newton's First Law (Law of Inertia) states that an object at rest stays at rest and an object in motion stays in motion with the same speed and direction unless acted upon by an unbalanced force.",
+            "newton's second law": "Newton's Second Law (F=ma) states that the acceleration of an object is directly proportional to the net force acting upon it and inversely proportional to its mass.",
+            "newton's third law": "Newton's Third Law states that for every action, there is an equal and opposite reaction.",
+            "inertia": "Inertia is the resistance of any physical object to any change in its state of motion; this includes changes to its speed, direction, or state of rest.",
+            "momentum": "Momentum (p) is the product of the mass and velocity of an object (p = mv). It is a vector quantity.",
+            "friction": "Friction is the force resisting the relative motion of solid surfaces, fluid layers, and material elements sliding against each other.",
+            "torque": "Torque (τ) is a measure of the rotational force. It is the rotational equivalent of linear force. Torque = Force x Perpendicular Distance from the pivot.",
+            "work": "In physics, work is the energy transferred to or from an object via the application of force along a displacement (Work = Force x Distance).",
+            "energy": "Energy is the quantitative property that must be transferred to an object in order to perform work on, or to heat, the object. Common forms include kinetic and potential energy.",
+            "power": "Power is the rate at which work is done or energy is transferred. The unit of power is the Watt (W), which is one Joule per second.",
+            "equilibrium": "A state of equilibrium is when the net force and net torque on an object are both zero, meaning it is either at rest or moving at a constant velocity.",
+            "free body diagram": "A free body diagram (FBD) is a graphical illustration used to visualize the applied forces, moments, and resulting reactions on a body in a given condition.",
+            "moment of inertia": "Moment of Inertia (I) is the rotational analog of mass. It quantifies an object's resistance to angular acceleration about a given axis.",
+            "kinematics": "Kinematics is the branch of mechanics that describes the motion of objects without considering the forces that cause the motion.",
+            "dynamics": "Dynamics is the branch of mechanics concerned with the motion of bodies under the action of forces.",
+
+            // Strength of Materials (SOM)
+            "stress": "Stress (σ) is the internal force per unit area that particles of a material exert on each other. σ = F/A. This is also called Normal Stress.",
+            "strain": "Strain (ε) is the measure of deformation, representing the change in length per unit original length. ε = ΔL/L. It is dimensionless.",
+            "hooke's law": "Hooke's Law states that for an elastic material, stress is directly proportional to strain. σ = Eε, where E is Young's Modulus.",
+            "young's modulus": "Young's Modulus (E), or the elastic modulus, is a measure of the stiffness of an elastic material. It is the ratio of normal stress to normal strain in the elastic region.",
+            "elasticity": "Elasticity is the ability of a body to resist a distorting influence and to return to its original size and shape when that influence or force is removed.",
+            "plasticity": "Plasticity, or plastic deformation, is the permanent deformation of a solid material under the action of an applied force, which remains after the force is removed.",
+            "ductility": "Ductility is a material's ability to be drawn into a thin wire. It is a measure of how much a material can deform plastically before fracturing.",
+            "brittleness": "Brittleness is the property of a material that causes it to fracture when subjected to stress, with little to no plastic deformation.",
+            "hardness": "Hardness is a measure of a material's resistance to localized plastic deformation, such as scratching, indentation, or abrasion.",
+            "toughness": "Toughness is the ability of a material to absorb energy and plastically deform without fracturing. It is the total area under the stress-strain curve.",
+            "fatigue": "Fatigue is the weakening of a material caused by repeatedly applied loads (cyclic loading). It is the progressive and localized structural damage.",
+            "creep": "Creep is the tendency of a solid material to move slowly or deform permanently under the influence of persistent mechanical stresses, often at high temperatures.",
+            "poisson's ratio": "Poisson's Ratio (ν) is the measure of the Poisson effect, the phenomenon where a material tends to contract in directions perpendicular to the direction of stretching. ν = - (Lateral Strain) / (Axial Strain).",
+            "factor of safety": "Factor of Safety (FoS) is a ratio of the ultimate (or yield) strength of a material to the actual working stress. It is a measure of design robustness. FoS = Ultimate Stress / Working Stress.",
+            "beam": "A beam is a structural element that primarily resists loads applied laterally to its axis. Its mode of deflection is primarily by bending.",
+            "bending": "Bending (or flexure) results in normal stress (tensile on one side, compressive on the other) and shear stress within a beam.",
+            "torsion": "Torsion is the twisting of an object due to an applied torque. It results in shear stress within the material.",
+            "shear stress": "Shear Stress (τ) is a stress state where the stress is parallel to the surface of the material, as opposed to normal stress (perpendicular). τ = F/A.",
+            "shear strain": "Shear Strain (γ) is the deformation of a material from shearing, defined as the change in angle between lines that were originally perpendicular.",
+            "bulk modulus": "Bulk Modulus (K) is a measure of a substance's resistance to uniform compression. It is the ratio of pressure increase to the resulting relative decrease in volume.",
+            "thermal stress": "Thermal Stress is mechanical stress created in a body due to a change in temperature, which causes thermal expansion or contraction that is constrained.",
+            "column": "A column is a vertical structural element that transmits, through compression, the load from above to a structural element below.",
+            "buckling": "Buckling is the sudden lateral or sideways failure of a slender structural member subjected to high compressive stress.",
+            "principal stress": "Principal Stresses are the maximum and minimum normal stresses acting on a point, found on planes where the shear stress is zero.",
+            "mohr's circle": "Mohr's Circle is a graphical method used to find the principal stresses and strains and the stresses acting on an element at any orientation.",
+
+            // Thermodynamics & Thermal Systems
+            "thermodynamics": "Thermodynamics is the branch of physics that deals with the relationships between heat, work, temperature, and energy.",
+            "internal energy": "Internal Energy (U) of a system is the total energy contained within it, excluding the kinetic and potential energy of the system as a whole. It is the energy needed to create the system.",
+            "specific heat": "Specific Heat (c) is the amount of heat energy required to raise the temperature of a unit mass (e.g., one gram or one kg) of a substance by one degree.",
+            "first law of thermodynamics": "The First Law of Thermodynamics (Conservation of Energy) states that energy cannot be created or destroyed. In a process, the change in internal energy (ΔU) = Heat added (Q) - Work done by system (W).",
+            "second law of thermodynamics": "The Second Law of Thermodynamics states that the total entropy of an isolated system can only increase over time or remain constant; it never decreases. It sets the direction of heat flow (hot to cold).",
+            "zeroth law of thermodynamics": "The Zeroth Law of Thermodynamics states that if two thermodynamic systems are each in thermal equilibrium with a third one, then they are in thermal equilibrium with each other.",
+            "entropy": "Entropy (S) is a measure of the molecular disorder, randomness, or 'energy dispersal' in a system. The Second Law states that the entropy of the universe is always increasing.",
+            "enthalpy": "Enthalpy (H) is a thermodynamic property of a system. It is the sum of the internal energy (U) and the product of the pressure (P) and volume (V) of the system. H = U + PV.",
+            "isobaric": "An isobaric process is a thermodynamic process in which the pressure remains constant (ΔP = 0).",
+            "isochoric": "An isochoric (or isometric) process is a thermodynamic process in which the volume remains constant (ΔV = 0).",
+            "isothermal": "An isothermal process is a thermodynamic process in which the temperature remains constant (ΔT = 0).",
+            "adiabatic": "An adiabatic process is a thermodynamic process in which no heat is transferred to or from the system (Q = 0).",
+            "heat engine": "A heat engine is a device that converts thermal energy (heat) into mechanical energy (work). It operates between a high-temperature source and a low-temperature sink.",
+            "carnot cycle": "The Carnot cycle is a theoretical, ideal thermodynamic cycle (2 isothermal, 2 adiabatic processes) that gives the maximum possible efficiency (Carnot Efficiency) of a heat engine.",
+            "carnot efficiency": "The maximum theoretical efficiency of a heat engine, given by η = 1 - (Tc/Th), where Tc is the absolute temperature of the cold sink and Th is the absolute temperature of the hot source.",
+            "refrigerator": "A refrigerator is a heat engine in reverse. It uses work to move heat from a cold reservoir to a hot reservoir. Its performance is measured by the Coefficient of Performance (COP).",
+            "heat pump": "A heat pump is a device that transfers heat from a colder area to a hotter area by using mechanical work. It is a refrigerator where the 'hot' side is the useful product (e.g., heating a house).",
+            "rankine cycle": "The Rankine Cycle is the idealized thermodynamic cycle used to describe the operation of steam turbine systems, common in power plants. It involves a pump, boiler, turbine, and condenser.",
+            "otto cycle": "The Otto Cycle is the idealized thermodynamic cycle that describes the functioning of a typical spark-ignition (gasoline) engine.",
+            "diesel cycle": "The Diesel Cycle is the idealized thermodynamic cycle that describes the functioning of a compression-ignition (diesel) engine.",
+            "conduction": "Conduction is the transfer of heat through a material by direct molecular collision, without any net movement of the material itself.",
+            "convection": "Convection is the transfer of heat by the bulk movement of a fluid (liquid or gas). This can be natural (due to density differences) or forced (using a fan or pump).",
+            "radiation": "Radiation is the transfer of heat through electromagnetic waves (like infrared), which can travel through a vacuum. This is how the sun heats the Earth.",
+            "heat transfer": "Heat transfer is the process by which thermal energy is exchanged between physical systems. The three main modes are conduction, convection, and radiation.",
+            "boiler": "A boiler is a closed vessel in which a fluid (usually water) is heated to produce steam or hot water for use in power generation, heating, or industrial processes.",
+            "turbine": "A turbine is a rotary mechanical device that extracts energy from a moving fluid (like water, steam, or air) and converts it into useful work, often to drive a generator.",
+            "compressor": "A compressor is a mechanical device that increases the pressure of a gas by reducing its volume. It is a key component in refrigeration and gas turbine cycles.",
+            "condenser": "A condenser is a heat exchanger used to convert a substance from its gaseous state to its liquid state (condensation), typically by cooling it.",
+            "evaporator": "An evaporator is a device used to turn a liquid into its gaseous (vapor) state, typically by heating it. It is used in refrigeration and air conditioning.",
+            "cooling tower": "A cooling tower is a heat rejection device that rejects waste heat to the atmosphere through the cooling of a water stream to a lower temperature.",
+            "ic engine": "An Internal Combustion (IC) Engine is a heat engine where the combustion of a fuel occurs with an oxidizer (usually air) in a combustion chamber, integral to the engine (e.g., car engines).",
+
+            // Fluid Mechanics
+            "fluid": "A fluid is a substance that has no fixed shape and yields easily to external pressure; it can be a liquid or a gas.",
+            "fluid mechanics": "Fluid mechanics is the branch of physics concerned with the mechanics of fluids (liquids, gases, and plasmas) and the forces on them.",
+            "viscosity": "Viscosity (μ) is a measure of a fluid's resistance to flow. It describes the internal friction of a moving fluid. Honey has a high viscosity; water has a low viscosity.",
+            "density": "Density (ρ) is a measure of mass per unit volume (ρ = m/V).",
+            "pressure": "Pressure (P) is the force applied perpendicular to the surface of an object per unit area (P = F/A).",
+            "pascal's law": "Pascal's Law states that a pressure change at any point in a confined incompressible fluid is transmitted equally throughout the fluid.",
+            "bernoulli's principle": "Bernoulli's Principle states that for an inviscid (low viscosity) flow, an increase in the speed of the fluid occurs simultaneously with a decrease in pressure or a decrease in the fluid's potential energy.",
+            "laminar flow": "Laminar flow is a flow regime characterized by smooth, parallel layers of fluid. It occurs at low Reynolds numbers, where viscous forces are dominant.",
+            "turbulent flow": "Turbulent flow is a flow regime characterized by chaotic, swirling, and irregular fluid motion. It occurs at high Reynolds numbers, where inertial forces are dominant.",
+            "reynolds number": "The Reynolds Number (Re) is a dimensionless quantity used to predict flow patterns. It is the ratio of inertial forces to viscous forces within a fluid.",
+            "buoyancy": "Buoyancy is the upward force exerted by a fluid that opposes the weight of an immersed object.",
+            "archimedes' principle": "Archimedes' Principle states that the buoyant force on an object submerged in a fluid is equal to the weight of the fluid displaced by the object.",
+            "drag": "Drag is the aerodynamic force that opposes an object's motion through a fluid (like air or water).",
+            "lift": "Lift is the aerodynamic force that is perpendicular to the direction of motion, most commonly used to counter the force of gravity and hold an aircraft aloft.",
+            "manometry": "Manometry is the measurement of pressure using a manometer, a device which balances the pressure of a fluid against a column of another fluid (like mercury or water).",
+            "continuity equation": "The Continuity Equation (A1V1 = A2V2) is based on the principle of conservation of mass. For an incompressible fluid, it states that the mass flow rate is constant, so the product of area and velocity is constant.",
+            "specific gravity": "Specific Gravity (SG) is the ratio of the density of a substance to the density of a reference substance (usually water for liquids and air for gases).",
+            "surface tension": "Surface Tension is the tendency of a liquid's surface to shrink into the minimum surface area possible. It is what allows insects to walk on water.",
+            "cavitation": "Cavitation is the formation of vapor bubbles in a liquid in a region where the pressure of the liquid falls below its vapor pressure. The collapse of these bubbles can cause significant damage to machinery.",
+            "center of pressure": "The Center of Pressure is the point on a submerged surface where the total resultant force of hydrodynamic pressure can be considered to act.",
+            "metacenter": "The Metacenter (M) is a point related to the stability of a floating body. For stable equilibrium, the metacenter must be above the center of gravity (G).",
+
+            // CAD, CAM, FEA, and Design
+            "cad": "CAD (Computer-Aided Design) is the use of computer systems to create, modify, analyze, or optimize a 2D or 3D design.",
+            "cam": "CAM (Computer-Aided Manufacturing) is the use of software and computer-controlled machinery (like CNC machines) to automate a manufacturing process.",
+            "cae": "CAE (Computer-Aided Engineering) is the use of computer software to simulate, analyze, and validate engineering designs. FEA is a major branch of CAE.",
+            "fea": "FEA (Finite Element Analysis) is a numerical method for solving engineering and physics problems. It involves dividing a complex object (discretization) into small, simple pieces called elements.",
+            "fem": "FEM (Finite Element Method) is the underlying mathematical method used to perform Finite Element Analysis (FEA).",
+            "node": "In FEA, a node is a specific point in the model (a vertex of an element) where the value of the unknown variable (like displacement or temperature) is calculated.",
+            "element": "In FEA, an element is a small, simple geometric shape (like a triangle or quadrilateral) that makes up the mesh.",
+            "mesh": "In FEA, a mesh is the collection of all elements and nodes that have been used to break down a complex geometry. Mesh quality is critical for accurate results.",
+            "boundary conditions": "In FEA, boundary conditions are the constraints (e.g., 'this face is fixed') and loads (e.g., 'this face has a pressure of 100Pa') applied to the model to simulate a real-world scenario.",
+            "discretization": "Discretization is the process of breaking down a continuous domain (a solid part) into a discrete set of points and elements (a mesh) for numerical analysis.",
+            "gd&t": "GD&T (Geometric Dimensioning and Tolerancing) is a symbolic language used on engineering drawings and 3D models to define the allowable variation in form, orientation, location, and runout of a part's features.",
+            "tolerance": "Tolerance is the total permissible variation in a dimension. It is the difference between the upper and lower limits of a size (e.g., 10.0mm ± 0.1mm).",
+            "allowance": "Allowance is the intentional difference between the maximum material limits of mating parts. It defines the minimum clearance or maximum interference between parts.",
+            "fit": "A fit is the range of tightness or looseness between two mating parts. The three main types are Clearance, Interference, and Transition fits.",
+
+            // Design of Machine Elements
+            "shaft": "A shaft is a rotating machine element, usually circular in cross-section, used to transmit power from one part to another.",
+            "key": "A key is a machine element used to connect a rotating element (like a gear or pulley) to a shaft. It prevents relative rotation by fitting into a keyway.",
+            "spring": "A spring is an elastic machine element that stores mechanical energy. It can be a helical coil, leaf spring, etc., and is designed to deflect under load and return to its original shape.",
+            "gear": "A gear is a rotating machine part having cut teeth (cogs), which mesh with another toothed part to transmit torque and motion, often changing the speed or direction.",
+            "bearing": "A bearing is a machine element that constrains relative motion to only the desired motion (e.g., rotation or linear movement) and reduces friction between moving parts.",
+            "belt drive": "A belt drive is a power transmission system consisting of a flexible belt and two or more pulleys. It is used to transmit power between shafts that may be at a distance.",
+            "chain drive": "A chain drive is a power transmission system using a roller chain and two or more sprockets. It provides a positive (no-slip) drive, unlike a belt.",
+            "coupling": "A coupling is a device used to connect two shafts together at their ends for the purpose of transmitting power. It can be rigid or flexible (to allow for misalignment).",
+            "clutch": "A clutch is a mechanical device that engages and disengages power transmission, especially from a driving shaft to a driven shaft.",
+            "brake": "A brake is a mechanical device that inhibits motion by absorbing energy from a moving system. It is used to slow down or stop a moving vehicle, wheel, or axle.",
+            "screw jack": "A screw jack is a device that uses a lead screw to lift or support heavy loads. It converts rotational motion into linear motion.",
+            "rivet": "A rivet is a permanent mechanical fastener. It consists of a smooth cylindrical shaft with a head on one end. The other end (the tail) is 'bucked' (deformed) to create a new head, holding the parts together.",
+            "bolt": "A bolt is a threaded fastener, designed to be used with a nut to join two or more unthreaded parts. It is typically tightened by rotating the nut.",
+            "nut": "A nut is a fastener with a threaded hole. It is used in conjunction with a mating bolt to fasten multiple parts together.",
+            "welding": "Welding is a fabrication process that joins materials (usually metals) by using high heat to melt the parts together, allowing them to cool and fuse.",
+            "casting": "Casting is a manufacturing process in which a liquid material (like molten metal) is poured into a mold, which contains a hollow cavity of the desired shape, and then allowed to solidify.",
+            "milling": "Milling is a machining process that uses a rotating multi-point cutting tool to remove material from a workpiece.",
+            "lathe": "A lathe is a machine tool that rotates a workpiece on its axis to perform various operations such as cutting, sanding, knurling, drilling, or turning."
+        };
+        // --- END OF KNOWLEDGE BASE ---
+
+
+        /**
+         * Handles the form submission event.
+         */
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const userMessage = messageInput.value.trim();
+            if (!userMessage) return;
+
+            // Disable form
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+
+            // Add user message to UI
+            addMessageToUI(userMessage, 'user');
+            messageInput.value = '';
+
+            // Show typing indicator
+            statusIndicator.textContent = 'Processing query...';
+            
+            // Simulate thinking delay for realism
+            setTimeout(() => {
+                // Get the mock bot response
+                const botResponse = getBotResponse(userMessage);
+                
+                // Add bot response to UI
+                addMessageToUI(botResponse, 'bot');
+
+                // Re-enable form and clear status
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                statusIndicator.textContent = '';
+                messageInput.focus();
+            }, 500); // 500ms delay
+        });
+        
+        /**
+         * Gets a pre-programmed response based on the user's message.
+         * @param {string} userMessage - The user's message.
+         */
+        function getBotResponse(userMessage) {
+            const query = userMessage.toLowerCase().trim();
+
+            if (query === 'hello' || query === 'hi') {
+                return "Query acknowledged. How can I assist with your ME query?";
+            }
+
+            if (query === 'help' || query === 'topics') {
+                // Get some keys from the knowledge base to show as examples
+                const allTopics = Object.keys(knowledgeBase);
+                // Get 15 random topics to show
+                const topics = [];
+                for(let i=0; i<15; i++) {
+                    const randomIndex = Math.floor(Math.random() * allTopics.length);
+                    topics.push(allTopics[randomIndex]);
+                }
+                return `My knowledge base contains many topics. Try asking about:\n- ${topics.join('\n- ')}\n...and many more.`;
+            }
+
+            // --- Improved Search Logic ---
+            let bestMatch = null;
+            let bestMatchKey = "";
+
+            // Iterate through the knowledge base keys
+            for (const key in knowledgeBase) {
+                // Check if the user's query *contains* a known key
+                if (query.includes(key)) {
+                    // Prefer longer keys as they are more specific
+                    // e.g., "newton's first law" is better than "force" if query is "what is newton's first law"
+                    if (key.length > bestMatchKey.length) {
+                        bestMatch = knowledgeBase[key];
+                        bestMatchKey = key;
+                    }
+                }
+            }
+
+            if (bestMatch) {
+                return bestMatch;
+            }
+            
+            // Default response if no match is found
+            return "Apologies. My local knowledge base does not contain a response for that query. Please rephrase or type 'help' to see example topics.";
+        }
+
+
+        /**
+         * Adds a message to the chat window UI.
+         * @param {string} message - The message text.
+         * @param {'user' | 'bot'} sender - The sender of the message.
+         */
+        function addMessageToUI(message, sender) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'flex';
+
+            // Format message to respect newlines
+            let formattedMessage = message.replace(/\n/g, '<br>');
+
+            if (sender === 'user') {
+                messageElement.classList.add('justify-end');
+                messageElement.innerHTML = `
+                    <div class="mr-3 max-w-xs md:max-w-md">
+                        <div class="bg-gray-700/60 text-white p-3 rounded-lg border border-gray-500/20 shadow-md">
+                            <p class="text-sm">${formattedMessage}</p>
+                        </div>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <span class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-gray-700 text-gray-300 border border-gray-500/30">
+                            <!-- User Icon -->
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A1.875 1.875 0 0 1 18.126 22.5H5.874a1.875 1.875 0 0 1-1.373-2.382Z" />
+                            </svg>
+                        </span>
+                    </div>
+                `;
+            } else {
+                messageElement.classList.add('justify-start');
+                messageElement.innerHTML = `
+                    <div class="flex-shrink-0">
+                        <span class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
+                            <!-- Bot Icon: Core -->
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 15.91a4.5 4.5 0 0 1-6.364 0 4.5 4.5 0 0 1 0-6.364 4.5 4.5 0 0 1 6.364 0 4.5 4.5 0 0 1 0 6.364Z" />
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="ml-3 max-w-xs md:max-w-md">
+                        <div class="bg-gray-800/60 text-cyan-200 p-3 rounded-lg border border-cyan-500/20 shadow-md">
+                            <p class="text-sm">${formattedMessage}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            chatWindow.appendChild(messageElement);
+            // Scroll to the bottom
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+    </script>
+</body>
+</html>
