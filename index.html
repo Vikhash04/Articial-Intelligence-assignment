@@ -123,7 +123,8 @@
 
         // Gemini API Configuration
         const apiKey = ""; // Leave as ""
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+        // *** FIX: Switched to a more stable, widely available model ***
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`;
 
         // System prompt to define the chatbot's role
         const systemPrompt = "You are a helpful and knowledgeable assistant specializing in mechanical engineering. Your purpose is to answer user questions about mechanical engineering topics clearly, concisely, and accurately. You are emulating a high-tech AI, like JARVIS. Your tone should be professional, efficient, and highly intelligent. When asked for calculations, provide the formula, then the result. If a question is outside the scope of mechanical engineering, state that your core programming is dedicated to ME topics.";
